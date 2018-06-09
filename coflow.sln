@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "coflow", "coflow\coflow.vcxproj", "{06F73E25-EA1A-4A7B-B399-770B31842E18}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{06F73E25-EA1A-4A7B-B399-770B31842E18}.Debug|Win32.ActiveCfg = Debug|Win32
+		{06F73E25-EA1A-4A7B-B399-770B31842E18}.Debug|Win32.Build.0 = Debug|Win32
+		{06F73E25-EA1A-4A7B-B399-770B31842E18}.Release|Win32.ActiveCfg = Release|Win32
+		{06F73E25-EA1A-4A7B-B399-770B31842E18}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
