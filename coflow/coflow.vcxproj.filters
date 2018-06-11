@@ -15,8 +15,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="Coflow.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Flow.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Coflow.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Flow.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

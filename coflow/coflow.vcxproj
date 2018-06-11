@@ -76,7 +76,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Coflow.cpp" />
+    <ClCompile Include="Flow.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Coflow.h" />
+    <ClInclude Include="Flow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
