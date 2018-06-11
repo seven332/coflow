@@ -1,14 +1,16 @@
+//定义coflow
+
 #pragma once
 #include "flow.h"
 #include <vector>
-using namespace std;
+
 
 //定义流表节点
 //用于记录coflow中包含的所有流以及其调度情况
 typedef struct FLOWNODE
 {
-	Flow flow;
-	bool dispatch;
+	Flow flow;	//流
+	bool tag;	//调度标志
 }FlowNode;
 
 class Coflow

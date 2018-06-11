@@ -33,6 +33,6 @@ void Coflow::InsertFlow(Flow flow)
 {
 	FlowNode node;
 	node.flow=flow;
-	node.dispatch=false;
+	node.tag=false;
 	flowtable.push_back(node);
 }

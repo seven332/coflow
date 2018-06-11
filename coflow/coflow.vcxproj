@@ -78,10 +78,16 @@
   <ItemGroup>
     <ClCompile Include="Coflow.cpp" />
     <ClCompile Include="Flow.cpp" />
+    <ClCompile Include="Generator.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Scheduler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Coflow.h" />
     <ClInclude Include="Flow.h" />
+    <ClInclude Include="Generator.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="Scheduler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
