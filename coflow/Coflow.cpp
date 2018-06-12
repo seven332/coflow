@@ -1,4 +1,4 @@
-#include "Coflow.h"
+ï»¿#include "Coflow.h"
 
 
 Coflow::Coflow(void)
@@ -19,24 +19,31 @@ Coflow::Coflow(int m_cotag)
 	flowtable.shrink_to_fit();
 }
 
-//»ñÈ¡coflow±êÖ¾
+//è·å–coflowæ ‡å¿—
 int Coflow::getCotag()
 {
 	return cotag;
 }
 
-//»ñÈ¡coflowÒÑ·¢ËÍ×Ö½ÚÊı
+//è·å–coflowå¤§å°
 int Coflow::getSize()
 {
 	return size;
 }
 
-//»ñÈ¡coflowµ÷¶ÈÍê³ÉÊ±¼ä
+//è·å–coflowå·²å‘é€å¤§å°
+int Coflow::getSentsize()
+{
+	return sentsize;
+}
+
+//è·å–coflowè°ƒåº¦å®Œæˆæ—¶é—´
 float Coflow::getFinishtime()
 {
 	return finishtime;
 }
 
+//è·å–æµè¡¨ä¸­æœ«ç½®ä½å…ƒç´ 
 Flow Coflow::getFlow()
 {
 	Flow flow=flowtable.back();
@@ -44,37 +51,37 @@ Flow Coflow::getFlow()
 	return flow;
 }
 
-//ÅĞ¶Ïµ±Ç°coflowÁ÷±íÊÇ·ñÎª¿Õ
+//åˆ¤æ–­å½“å‰coflowæµè¡¨æ˜¯å¦ä¸ºç©º
 bool Coflow::TableEmpty()
 {
 	return flowtable.empty();
 }
 
-//ÉèÖÃcoflow´óĞ¡
+//è®¾ç½®coflowå¤§å°
 void Coflow::setSize(int m_size)
 {
 	size=m_size;
 }
 
-//ÉèÖÃÒÑ·¢ËÍ´óĞ¡
+//è®¾ç½®å·²å‘é€å¤§å°
 void Coflow::setSentsize(int m_sentsize)
 {
 	sentsize=m_sentsize;
 }
 
-//ÉèÖÃcoflowµ÷¶ÈÍê³ÉÊ±¼ä
+//è®¾ç½®coflowè°ƒåº¦å®Œæˆæ—¶é—´
 void Coflow::setFinishtime(float time)
 {
 	finishtime=time;
 }
 
-//²åÈëĞÂ½Úµã
+//å°†æ–°æ¥çš„å­æµæ’å…¥æµè¡¨
 void Coflow::InsertFlow(Flow flow)
 {
 	flowtable.push_back(flow);
 }
 
-//É¾³ıÖ¸¶¨½Úµã
+//ä»æµè¡¨å»æ‰åˆ¶å®šæµ
 bool Coflow::PopFlow(Flow flow)
 {
 	vector<Flow>::iterator iter;

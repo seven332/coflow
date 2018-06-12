@@ -12,13 +12,14 @@ Flow::~Flow(void)
 }
 
 //有参构造函数
-Flow::Flow(int m_flowtag, int m_size, int m_time, int m_cotag)
+Flow::Flow(int m_flowtag, int m_size, float m_time, int m_cotag)
 {
 	flowtag=m_flowtag;
 	size=m_size;
 	time=m_time;
 	cotag=m_cotag;
 	tag=0;
+	state=false;
 	finishtime=0;
 }
 
@@ -35,7 +36,7 @@ int Flow::getSize()
 }
 
 //获取流到达时间
-int Flow::getTime()
+float Flow::getTime()
 {
 	return time;
 }
@@ -44,6 +45,12 @@ int Flow::getTime()
 int Flow::getCotag()
 {
 	return cotag;
+}
+
+//获取调度状态
+bool Flow::getState()
+{
+	return state;
 }
 
 //获取实际分类结果
@@ -56,6 +63,12 @@ int Flow::getTag()
 float Flow::getFinishtime()
 {
 	return finishtime;
+}
+
+//设置调度状态
+void Flow::setState(bool m_state)
+{
+	state=m_state;
 }
 
 //设置流调度完成时间

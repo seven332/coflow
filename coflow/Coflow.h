@@ -1,40 +1,40 @@
-//¶¨Òåcoflow
+ï»¿//å®šä¹‰coflow
 
 #pragma once
 #include "flow.h"
 #include <vector>
 
 
-////¶¨ÒåÁ÷±í½Úµã
-////ÓÃÓÚ¼ÇÂ¼coflowÖĞ°üº¬µÄËùÓĞÁ÷ÒÔ¼°Æäµ÷¶ÈÇé¿ö
+////å®šä¹‰æµè¡¨èŠ‚ç‚¹
+////ç”¨äºè®°å½•coflowä¸­åŒ…å«çš„æ‰€æœ‰æµä»¥åŠå…¶è°ƒåº¦æƒ…å†µ
 //typedef struct FLOWNODE
 //{
-//	Flow flow;	//Á÷
-//	bool tag;	//µ÷¶È±êÖ¾
+//	Flow flow;	//æµ
+//	bool tag;	//è°ƒåº¦æ ‡å¿—
 //}FlowNode;
 
 class Coflow
 {
 private:
-	int cotag;		//coflow±êÊ¶
-	int size;		//coflow´óĞ¡
-	int sentsize;	//ÒÑ·¢ËÍ´óĞ¡
-	float finishtime;	//coflowµ÷¶ÈÍê³ÉÊ±¼ä
-	vector<Flow> flowtable;	//coflowµÄÁ÷±í
+	int cotag;		//coflowæ ‡è¯†
+	int size;		//coflowå¤§å°
+	int sentsize;	//å·²å‘é€å¤§å°
+	float finishtime;	//coflowè°ƒåº¦å®Œæˆæ—¶é—´
+	vector<Flow> flowtable;	//coflowçš„æµè¡¨
 public:
 	Coflow(void);
-	Coflow(int m_cotag);	//´ø²Î¹¹Ôìº¯Êı
+	Coflow(int m_cotag);	//å¸¦å‚æ„é€ å‡½æ•°
 	~Coflow(void);
-	int getCotag();
-	int getSize();
-	int getSentsize();
-	float getFinishtime();
-	Flow getFlow();
-	bool TableEmpty();
-	void setSize(int m_size);
-	void setSentsize(int m_sentsize);
-	void setFinishtime(float time);
-	void InsertFlow(Flow flow);
-	bool PopFlow(Flow flow);
+	int getCotag();			//è·å–coflowæ ‡å¿—
+	int getSize();			//è·å–coflowå¤§å°
+	int getSentsize();		//è·å–coflowå·²å‘é€å¤§å°
+	float getFinishtime();	//è·å–coflowè°ƒåº¦å®Œæˆæ—¶é—´
+	Flow getFlow();			//è·å–æµè¡¨ä¸­æœ«ç½®ä½å…ƒç´ 
+	bool TableEmpty();		//åˆ¤æ–­å½“å‰coflowæµè¡¨æ˜¯å¦ä¸ºç©º
+	void setSize(int m_size);	//è®¾ç½®coflowå¤§å°
+	void setSentsize(int m_sentsize);	//è®¾ç½®coflowå·²å‘é€å¤§å°
+	void setFinishtime(float time);		//è®¾ç½®coflowè°ƒåº¦å®Œæˆæ—¶é—´
+	void InsertFlow(Flow flow);			//å°†æ–°æ¥çš„å­æµæ’å…¥æµè¡¨
+	bool PopFlow(Flow flow);			//ä»æµè¡¨å»æ‰åˆ¶å®šæµ
 };
 

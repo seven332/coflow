@@ -1,4 +1,4 @@
-#include "Scheduler.h"
+ï»¿#include "Scheduler.h"
 
 
 Scheduler::Scheduler(void)
@@ -10,7 +10,45 @@ Scheduler::~Scheduler(void)
 {
 }
 
-//¶Ô±ÈÁ½¸öcoflowµÄ´óĞ¡,ÉıĞò
+//æ›´æ–°æ¥æ”¶é˜Ÿåˆ—
+//å°†è¾¾åˆ°æ—¶é—´å°äºæŒ‡å®šæ—¶é—´çš„æœªè¢«è°ƒåº¦çš„æµåŠ å…¥åˆ°æ¥æ”¶é˜Ÿåˆ—
+//åŒæ—¶ä¿®æ”¹ç›¸åº”æµçš„çŠ¶æ€ä¸ºå·²è°ƒåº¦
+void Scheduler::UpdateRecvq(Flow *flow, float time)
+{
+	for(int i=0;i<NUMOFFLOW;i++)
+	{
+		if((flow[i].getTime()<=time)&&!flow[i].getState())
+		{
+			recvq.push_back(flow[i]);
+			flow[i].setState(true);
+		}
+	}
+}
+
+//å‘é€æŒ‡å®šæµ
+//æ ¹æ®çº¿é€Ÿè®¡ç®—å‘é€æ‰€éœ€æ—¶é—´
+//è¿”å›æ›´æ–°åçš„å½“å‰æ—¶é—´
+float Scheduler::SendFlow(Flow f, float time)
+{
+	float finishtime=time+(float)f.getSize()/BANDWIDTH;
+	return finishtime;
+}
+
+//æ›´æ–°åˆ¶å®šæµæ‰€å±coflowå®Œæˆæ—¶é—´
+void Scheduler::UpdateCoflowFinishtime(Coflow *coflow, Flow f)
+{
+	int cotag=f.getCotag()-1;
+	coflow[cotag].setFinishtime(f.getFinishtime());
+}
+
+//æ›´æ–°Coflowæµè¡¨
+//å°†æ¥æ”¶é˜Ÿåˆ—ä¸­çš„æµæ·»åŠ è‡³coflowæµè¡¨
+void UpdateCoflowFlowtable(Coflow *coflow)
+{
+
+}
+
+//å¯¹æ¯”ä¸¤ä¸ªcoflowçš„å¤§å°,å‡åº
 bool Scheduler::comparebycosize(Coflow a,Coflow b)
 {
 	if(a.getSize()<b.getSize())
@@ -19,8 +57,8 @@ bool Scheduler::comparebycosize(Coflow a,Coflow b)
 		return false;
 }
 
-//¶¨ÒåÁ÷Ö®¼äµÄ±È½Ïº¯Êı
-//¸ù¾İÁ÷µÄµ½´ïÊ±¼ä±È½Ï´óĞ¡,ÉıĞò
+//å®šä¹‰æµä¹‹é—´çš„æ¯”è¾ƒå‡½æ•°
+//æ ¹æ®æµçš„åˆ°è¾¾æ—¶é—´æ¯”è¾ƒå¤§å°,å‡åº
 bool Scheduler::comparebytime(Flow a, Flow b)
 {
 	if(a.getTime()<b.getTime())
@@ -29,8 +67,8 @@ bool Scheduler::comparebytime(Flow a, Flow b)
 		return false;
 }
 
-//¶¨ÒåÁ÷Ö®¼äµÄ±È½Ïº¯Êı
-//¸ù¾İÁ÷µÄ±êÊ¶±È½Ï´óĞ¡,ÉıĞò
+//å®šä¹‰æµä¹‹é—´çš„æ¯”è¾ƒå‡½æ•°
+//æ ¹æ®æµçš„æ ‡è¯†æ¯”è¾ƒå¤§å°,å‡åº
 bool Scheduler::comparebyflowtag(Flow a, Flow b)
 {
 	if(a.getFlowtag()<b.getFlowtag())
@@ -39,7 +77,7 @@ bool Scheduler::comparebyflowtag(Flow a, Flow b)
 		return false;
 }
 
-//¼ÆËãËùÓĞÁ÷´«ÊäÍê³ÉËùĞèÊ±¼ä
+//è®¡ç®—æ‰€æœ‰æµä¼ è¾“å®Œæˆæ‰€éœ€æ—¶é—´
 float Scheduler::FinishTime(Flow *flow)
 {
 	float time=0.0;
@@ -53,7 +91,7 @@ float Scheduler::FinishTime(Flow *flow)
 	return time;
 }
 
-//CoflowÆ½¾ùÍê³ÉÊ±¼ä
+//Coflowå¹³å‡å®Œæˆæ—¶é—´
 float Scheduler::CCT(Coflow *coflow)
 {
 	float time=0.0;
@@ -61,12 +99,12 @@ float Scheduler::CCT(Coflow *coflow)
 	{
 		float cotime=coflow[i].getFinishtime();
 		time+=cotime;
-		cout<<"Coflow£º"<<i+1<<"Íê³ÉÊ±¼äÎª£º"<<cotime<<endl;
+		cout<<"Coflowï¼š"<<i+1<<"å®Œæˆæ—¶é—´ä¸ºï¼š"<<cotime<<endl;
 	}
 	return time/NUMOFCOFLOW;
 }
 
-//°´ÕÕCoflow±êÊ¶½«Á÷Ìí¼ÓÖÁcoflowÖĞ
+//æŒ‰ç…§Coflowæ ‡è¯†å°†æµæ·»åŠ è‡³coflowä¸­
 void Scheduler::ClassifyByCotag(Flow *flow, Coflow *coflow)
 {
 	for(int i=0;i<NUMOFFLOW;i++)
@@ -77,33 +115,63 @@ void Scheduler::ClassifyByCotag(Flow *flow, Coflow *coflow)
 	}
 }
 
-//FIFOµ÷¶ÈËã·¨
+//FIFOè°ƒåº¦ç®—æ³•
 void Scheduler::FIFO(Flow *flow, Coflow *coflow)
 {
-	cout<<"--------Ê¹ÓÃÏÈÈëÏÈ³öËã·¨µ÷¶È--------"<<endl;
-	sort(flow,flow+NUMOFFLOW,comparebytime);
-	float finishtime=0.0;
-	for(int i=0;i<NUMOFFLOW;i++)
+	cout<<"--------ä½¿ç”¨å…ˆå…¥å…ˆå‡ºç®—æ³•è°ƒåº¦--------"<<endl;
+	sort(flow,flow+NUMOFFLOW,comparebytime);	//æŒ‰ç…§æµçš„åˆ°è¾¾æ—¶é—´æ’åº
+	float time=0.0;				//å®æ—¶æ›´æ–°æ—¶é—´
+	float lastflashtime=0.0;	//è®°å½•ä¸Šä¸€æ¬¡æ›´æ–°æµè¡¨æ—¶é—´
+	UpdateRecvq(flow,time);		//å¼€å§‹æ›´æ–°æ¥æ”¶é˜Ÿåˆ—
+	//æ¥æ”¶é˜Ÿåˆ—æœªç©ºå‰æŒç»­æµè°ƒåº¦è¿‡ç¨‹
+	while(!recvq.empty())
 	{
-		finishtime+=(float)flow[i].getSize()/BANDWIDTH;
-		flow[i].setFinishtime(finishtime);
-		int cotag=flow[i].getCotag()-1;
-		coflow[cotag].setFinishtime(finishtime);
+		//å¤„ç†é˜Ÿå¤´å…ƒç´ 
+		Flow f=recvq.front();
+		vector<Flow>::iterator it=recvq.begin();
+		recvq.erase(it);
+		time=SendFlow(f,time);	
+		f.setFinishtime(time);
+
+		//æ›´æ–°å¤„ç†åæµæ‰€å±coflowå®Œæˆæ—¶é—´
+		UpdateCoflowFinishtime(coflow,f);
+
+		//æ¯ä¸ªæ—¶é—´å•ä½æ›´æ–°æ¥æ”¶é˜Ÿåˆ—
+		if(time-lastflashtime>=1.0)
+		{
+			UpdateRecvq(flow,time);
+			lastflashtime=time;
+		}
 	}
-	cout<<"ËùÓĞÁ÷µ÷¶ÈÍê³ÉÊ±¼ä£º"<<finishtime<<endl;
-	cout<<"ËùÓĞCoflowµ÷¶ÈÍê³ÉµÄÆ½¾ùÊ±¼äÎª£º"<<CCT(coflow)<<endl;
+	//æµè°ƒåº¦ç»“æŸ
+	cout<<"æ‰€æœ‰æµè°ƒåº¦å®Œæˆæ—¶é—´ï¼š"<<time<<endl;
+	cout<<"æ‰€æœ‰Coflowè°ƒåº¦å®Œæˆçš„å¹³å‡æ—¶é—´ä¸ºï¼š"<<CCT(coflow)<<endl;
 	cout<<"------------------------------------"<<endl;
 }
 
-//×îĞ¡coflowÆ½¾ùÍê³ÉÊ±¼äµ÷¶È·½°¸
-//Ò»ÖÖÀëÏß·ÖÎö·½·¨£¬ĞèÒªÖªµÀÈ«²¿coflowµÄĞÅÏ¢
+//debug MINCCT
+//åœ¨æ­¤æƒ…å†µä¸‹ï¼Œå·²ç»é¢„å…ˆçŸ¥é“äº†æ‰€æœ‰coflowçš„å¤§å°ï¼Œåœ¨è¾ƒå°çš„coflowæ‹¥æœ‰æœ€é«˜çš„è°ƒåº¦ä¼˜å…ˆçº§
+void Scheduler::NEWMIN(Flow *flow, Coflow *coflow)
+{
+	cout<<"--------NEWMIN--------"<<endl;
+	float time=0.0;				//å®æ—¶æ›´æ–°æ—¶é—´
+	float lastflashtime=0.0;	//è®°å½•ä¸Šä¸€æ¬¡æ›´æ–°æµè¡¨æ—¶é—´
+	UpdateRecvq(flow,time);		//å¼€å§‹æ›´æ–°æ¥æ”¶é˜Ÿåˆ—
+	///////////right here//////////////
+	cout<<"----------------------"<<endl;
+}
+
+//æœ€å°coflowå¹³å‡å®Œæˆæ—¶é—´è°ƒåº¦æ–¹æ¡ˆ
+//ä¸€ç§ç¦»çº¿åˆ†ææ–¹æ³•ï¼Œéœ€è¦çŸ¥é“å…¨éƒ¨coflowçš„ä¿¡æ¯
 void Scheduler::MINCCT(Flow *flow, Coflow *coflow)
 {
-	cout<<"--------Ê¹ÓÃ×îĞ¡Æ½¾ùÍê³ÉÊ±¼äËã·¨µ÷¶È--------"<<endl;
-	ClassifyByCotag(flow,coflow);						//Ê×ÏÈ½«ËùÓĞÁ÷Ìí¼ÓÖÁ¶ÔÓ¦coflow
-	sort(coflow,coflow+NUMOFCOFLOW,comparebycosize);	//°´ÕÕcoflow´óĞ¡ÉıĞòÅÅĞò
-	sort(flow,flow+NUMOFFLOW,comparebyflowtag);			//°´ÕÕflowµÄ±àºÅÉıĞòÅÅĞò
-	float finishtime=0.0;
+	cout<<"--------ä½¿ç”¨æœ€å°å¹³å‡å®Œæˆæ—¶é—´ç®—æ³•è°ƒåº¦--------"<<endl;
+	ClassifyByCotag(flow,coflow);						//é¦–å…ˆå°†æ‰€æœ‰æµæ·»åŠ è‡³å¯¹åº”coflow
+	sort(coflow,coflow+NUMOFCOFLOW,comparebycosize);	//æŒ‰ç…§coflowå¤§å°å‡åºæ’åº
+	sort(flow,flow+NUMOFFLOW,comparebyflowtag);			//æŒ‰ç…§flowçš„ç¼–å·å‡åºæ’åº
+	float finishtime=0.0;								//å®æ—¶æ›´æ–°å®Œæˆæ—¶é—´
+	
+	//å¯¹æ‰€æœ‰coflowï¼ŒæŒ‰ç…§å…¶å¤§å°ä¾æ¬¡è°ƒåº¦
 	for(int i=0;i<NUMOFCOFLOW;i++)
 	{
 		while(!coflow[i].TableEmpty())
@@ -114,13 +182,17 @@ void Scheduler::MINCCT(Flow *flow, Coflow *coflow)
 			coflow[i].setFinishtime(finishtime);
 		}
 	}
-	cout<<"ËùÓĞÁ÷µ÷¶ÈÍê³ÉÊ±¼ä£º"<<FinishTime(flow)<<endl;
-	cout<<"ËùÓĞCoflowµ÷¶ÈÍê³ÉµÄÆ½¾ùÊ±¼äÎª£º"<<CCT(coflow)<<endl;
+	cout<<"æ‰€æœ‰æµè°ƒåº¦å®Œæˆæ—¶é—´ï¼š"<<FinishTime(flow)<<endl;
+	cout<<"æ‰€æœ‰Coflowè°ƒåº¦å®Œæˆçš„å¹³å‡æ—¶é—´ä¸ºï¼š"<<CCT(coflow)<<endl;
 	cout<<"--------------------------------------------"<<endl;
 }
 
-//¶à¼¶ÓÅÏÈÈ¨µ÷¶È¶ÓÁĞ
+//å¤šçº§ä¼˜å…ˆæƒè°ƒåº¦é˜Ÿåˆ—
 void MPQ(Flow *flow, Coflow *coflow)
 {
+	cout<<"--------ä½¿ç”¨åŸºäºcoflowçš„å¤šçº§ä¼˜å…ˆçº§é˜Ÿåˆ—ç®—æ³•è°ƒåº¦--------"<<endl;
+	float time=0.0;				//å®æ—¶æ›´æ–°æ—¶é—´
+	float lastflashtime=0.0;	//è®°å½•ä¸Šä¸€æ¬¡æ›´æ–°æµè¡¨æ—¶é—´
 
+	cout<<"------------------------------------------------------"<<endl;
 }

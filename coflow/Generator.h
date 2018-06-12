@@ -1,4 +1,4 @@
-//¶¨ÒåÊı¾İÉú³ÉÆ÷,ÓÃÓÚÉú³ÉÄ£ÄâÊı¾İ
+ï»¿//å®šä¹‰æ•°æ®ç”Ÿæˆå™¨,ç”¨äºç”Ÿæˆæ¨¡æ‹Ÿæ•°æ®
 
 #pragma once
 
@@ -7,18 +7,17 @@
 #include <ctime>
 #include <algorithm>
 
-#define NUMOFFLOW 100		//¶¨ÒåÁ÷×ÜÊı 
-#define NUMOFCOFLOW 10		//¶¨Òåcoflow×ÜÊı
-#define NUMPERCOFLOW 10		//¶¨ÒåÃ¿¸öcoflowÖĞÁ÷ÊıÄ¿
-#define BANDWIDTH 100		//¶¨Òå´ø¿í
+#define NUMOFFLOW 100		//å®šä¹‰æµæ€»æ•° 
+#define NUMOFCOFLOW 10		//å®šä¹‰coflowæ€»æ•°
+#define NUMPERCOFLOW 10		//å®šä¹‰æ¯ä¸ªcoflowä¸­æµæ•°ç›®
+#define BANDWIDTH 100		//å®šä¹‰å¸¦å®½
 
 class Generator
 {
 public:
 	Generator(void);
 	~Generator(void);
-	int random(int l, int h);
-
-	void produce(Flow *flow);
+	int random(int l, int h);	//ç”Ÿæˆåˆ¶å®šèŒƒå›´å†…çš„éšæœºæ•´æ•°
+	void produce(Flow *flow);	//ç”Ÿæˆæ¨¡æ‹Ÿæ•°æ®
 };
 

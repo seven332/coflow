@@ -1,4 +1,4 @@
-#include "Generator.h"
+ï»¿#include "Generator.h"
 
 
 Generator::Generator(void)
@@ -10,8 +10,8 @@ Generator::~Generator(void)
 {
 }
 
-//¶¨ÒåËæ»úÊıÉú³Éº¯Êı
-//Éú³ÉÖÆ¶¨·¶Î§ÄÚµÄËæ»úÕûÊı
+//å®šä¹‰éšæœºæ•°ç”Ÿæˆå‡½æ•°
+//ç”Ÿæˆåˆ¶å®šèŒƒå›´å†…çš„éšæœºæ•´æ•°
 int Generator::random(int l ,int h)
 {
 	return rand()%(h-l)+l;
@@ -19,7 +19,7 @@ int Generator::random(int l ,int h)
 
 
 
-//Éú³ÉÄ£ÄâÊı¾İ
+//ç”Ÿæˆæ¨¡æ‹Ÿæ•°æ®
 void Generator::produce(Flow *flow)
 {
 	int tag=1;	
@@ -31,7 +31,7 @@ void Generator::produce(Flow *flow)
 		for(int j = 0;j < NUMPERCOFLOW;j++)
 		{
 			int size=random(mean-range+1,mean+range);
-			Flow f(tag,size,j,i+1);
+			Flow f(tag,size,(float)j,i+1);
 			tag++;
 			flow[i*NUMPERCOFLOW+j]=f;
 		}
