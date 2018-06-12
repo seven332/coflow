@@ -19,5 +19,7 @@ public:
 	float FinishTime(Flow *flow);
 	float CCT(Coflow *coflow);
 	static bool comparebycosize(Coflow a,Coflow b);
+	static bool comparebytime(Flow a, Flow b);
+	static bool comparebyflowtag(Flow a, Flow b);
 };
 

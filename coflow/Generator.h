@@ -18,7 +18,7 @@ public:
 	Generator(void);
 	~Generator(void);
 	int random(int l, int h);
-	static bool compare(Flow a, Flow b);
+
 	void produce(Flow *flow);
 };
 

@@ -39,9 +39,9 @@ float Coflow::getFinishtime()
 
 Flow Coflow::getFlow()
 {
-	//vector<FlowNode>::iterator iter;
-	//iter=flowtable.back();
-	return flowtable.back().flow;
+	Flow flow=flowtable.back();
+	flowtable.pop_back();
+	return flow;
 }
 
 //判断当前coflow流表是否为空
@@ -71,8 +71,20 @@ void Coflow::setFinishtime(float time)
 //插入新节点
 void Coflow::InsertFlow(Flow flow)
 {
-	FlowNode node;
-	node.flow=flow;
-	node.tag=false;
-	flowtable.push_back(node);
+	flowtable.push_back(flow);
+}
+
+//删除指定节点
+bool Coflow::PopFlow(Flow flow)
+{
+	vector<Flow>::iterator iter;
+	for(iter=flowtable.begin();iter!=flowtable.end();iter++)
+	{
+		if(iter->getFlowtag()==flow.getFlowtag())
+		{
+			flowtable.erase(iter);
+			return true;
+		}
+	}
+	return false;
 }

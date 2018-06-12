@@ -17,20 +17,12 @@ int Generator::random(int l ,int h)
 	return rand()%(h-l)+l;
 }
 
-//定义流之间的比较函数
-//根据流的到达时间比较大小,升序
-bool Generator::compare(Flow a, Flow b)
-{
-	if(a.getTime()<b.getTime())
-		return true;
-	else
-		return false;
-}
+
 
 //生成模拟数据
 void Generator::produce(Flow *flow)
 {
-	int tag=0;	
+	int tag=1;	
 	srand((unsigned)time(NULL));
 	for(int i = 0;i< NUMOFCOFLOW;i++)
 	{
@@ -44,5 +36,4 @@ void Generator::produce(Flow *flow)
 			flow[i*NUMPERCOFLOW+j]=f;
 		}
 	}
-	sort(flow,flow+NUMOFFLOW,compare);
 }

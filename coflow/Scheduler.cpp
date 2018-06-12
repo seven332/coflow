@@ -19,6 +19,26 @@ bool Scheduler::comparebycosize(Coflow a,Coflow b)
 		return false;
 }
 
+//定义流之间的比较函数
+//根据流的到达时间比较大小,升序
+bool Scheduler::comparebytime(Flow a, Flow b)
+{
+	if(a.getTime()<b.getTime())
+		return true;
+	else
+		return false;
+}
+
+//定义流之间的比较函数
+//根据流的标识比较大小,升序
+bool Scheduler::comparebyflowtag(Flow a, Flow b)
+{
+	if(a.getFlowtag()<b.getFlowtag())
+		return true;
+	else
+		return false;
+}
+
 //计算所有流传输完成所需时间
 float Scheduler::FinishTime(Flow *flow)
 {
@@ -61,6 +81,7 @@ void Scheduler::ClassifyByCotag(Flow *flow, Coflow *coflow)
 void Scheduler::FIFO(Flow *flow, Coflow *coflow)
 {
 	cout<<"--------使用先入先出算法调度--------"<<endl;
+	sort(flow,flow+NUMOFFLOW,comparebytime);
 	float finishtime=0.0;
 	for(int i=0;i<NUMOFFLOW;i++)
 	{
@@ -81,13 +102,17 @@ void Scheduler::MINCCT(Flow *flow, Coflow *coflow)
 	cout<<"--------使用最小平均完成时间算法调度--------"<<endl;
 	ClassifyByCotag(flow,coflow);						//首先将所有流添加至对应coflow
 	sort(coflow,coflow+NUMOFCOFLOW,comparebycosize);	//按照coflow大小升序排序
+	sort(flow,flow+NUMOFFLOW,comparebyflowtag);			//按照flow的编号升序排序
 	float finishtime=0.0;
 	for(int i=0;i<NUMOFCOFLOW;i++)
 	{
-		finishtime+=(float)flow[i].getSize()/BANDWIDTH;
-		flow[i].setFinishtime(finishtime);
-		int cotag=flow[i].getCotag()-1;
-		coflow[cotag].setFinishtime(finishtime);
+		while(!coflow[i].TableEmpty())
+		{
+			Flow f=coflow[i].getFlow();
+			finishtime+=(float)f.getSize()/BANDWIDTH;
+			flow[f.getFlowtag()-1].setFinishtime(finishtime);
+			coflow[i].setFinishtime(finishtime);
+		}
 	}
 	cout<<"所有流调度完成时间："<<FinishTime(flow)<<endl;
 	cout<<"所有Coflow调度完成的平均时间为："<<CCT(coflow)<<endl;
