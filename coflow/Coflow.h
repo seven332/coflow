@@ -17,7 +17,9 @@ class Coflow
 {
 private:
 	int cotag;		//coflow标识
-	int size;		//已发送大小
+	int size;		//coflow大小
+	int sentsize;	//已发送大小
+	float finishtime;	//coflow调度完成时间
 	vector<FlowNode> flowtable;	//coflow的流表
 public:
 	Coflow(void);
@@ -25,6 +27,13 @@ public:
 	~Coflow(void);
 	int getCotag();
 	int getSize();
+	int getSentsize();
+	float getFinishtime();
+	Flow getFlow();
+	bool TableEmpty();
+	void setSize(int m_size);
+	void setSentsize(int m_sentsize);
+	void setFinishtime(float time);
 	void InsertFlow(Flow flow);
 };
 

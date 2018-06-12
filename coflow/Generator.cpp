@@ -18,7 +18,7 @@ int Generator::random(int l ,int h)
 }
 
 //定义流之间的比较函数
-//根据流的到达时间比较大小
+//根据流的到达时间比较大小,升序
 bool Generator::compare(Flow a, Flow b)
 {
 	if(a.getTime()<b.getTime())
