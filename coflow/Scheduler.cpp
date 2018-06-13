@@ -13,23 +13,44 @@ Scheduler::~Scheduler(void)
 //更新接收队列
 //将达到时间小于指定时间的未被调度的流加入到接收队列
 //同时修改相应流的状态为已调度
-void Scheduler::UpdateRecvq(Flow *flow, float time)
+bool Scheduler::UpdateRecvq(Flow *flow, float time)
 {
+	bool state=false;	//用于判断是否存在未被处理的流
 	for(int i=0;i<NUMOFFLOW;i++)
 	{
 		if((flow[i].getTime()<=time)&&!flow[i].getState())
 		{
 			recvq.push_back(flow[i]);
 			flow[i].setState(true);
+			state=true;
 		}
 	}
+	return state;
 }
 
+//更新指定coflow流表
 //从接收队列取制定coflow的流
 //将属于制定coflow中的所有流从接收队列存入coflow
-void Scheduler::GetFlowbyCotag(Coflow *coflow, int cotag)
+void Scheduler::UpdateFlowtable(Coflow *coflow, int cotag)	
 {
-
+	vector<Flow>::iterator it;
+	for(it=recvq.begin();it!=recvq.end();)
+	{
+		//将指定coflow中的流从接收队列取出加入流表
+		if(it->getCotag()==cotag)
+		{
+			//更新coflow大小
+			coflow[cotag].setSize(coflow[cotag].getSize()+it->getSize());
+			//更新coflow流表
+			coflow[cotag].InsertFlow(*it);
+			//接收队列中去除响应流
+			it=recvq.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
 }
 
 //发送指定流
@@ -41,10 +62,12 @@ float Scheduler::SendFlow(Flow f, float time)
 	return finishtime;
 }
 
-//更新制定流所属coflow完成时间
-void Scheduler::UpdateCoflowFinishtime(Coflow *coflow, Flow f)
+//更新指定流及所属coflow完成时间
+void Scheduler::UpdateFinishtime(Flow *flow, Coflow *coflow, Flow f)
 {
-	int cotag=f.getCotag()-1;
+	int flowtag=f.getFlowtag();
+	int cotag=f.getCotag();
+	flow[flowtag].setFinishtime(f.getFinishtime());
 	coflow[cotag].setFinishtime(f.getFinishtime());
 }
 
@@ -90,6 +113,11 @@ float Scheduler::FinishTime(Flow *flow)
 	float time=0.0;
 	for(int i=0;i<NUMOFFLOW;i++)
 	{
+		if(flow[i].getFinishtime()==0)
+		{
+			flow[i].print();
+			continue;
+		}
 		if(time < flow[i].getFinishtime())
 		{
 			time=flow[i].getFinishtime();
@@ -107,6 +135,7 @@ float Scheduler::CCT(Coflow *coflow)
 		float cotime=coflow[i].getFinishtime();
 		time+=cotime;
 		cout<<"Coflow："<<i+1<<"完成时间为："<<cotime<<endl;
+		//cout<<"Coflow："<<i+1<<"大小为："<<coflow[i].getSize()<<endl;
 	}
 	return time/NUMOFCOFLOW;
 }
@@ -116,7 +145,7 @@ void Scheduler::ClassifyByCotag(Flow *flow, Coflow *coflow)
 {
 	for(int i=0;i<NUMOFFLOW;i++)
 	{
-		int cotag=flow[i].getCotag()-1;
+		int cotag=flow[i].getCotag();
 		coflow[cotag].setSize(coflow[cotag].getSize()+flow[i].getSize());
 		coflow[cotag].InsertFlow(flow[i]);
 	}
@@ -126,7 +155,7 @@ void Scheduler::ClassifyByCotag(Flow *flow, Coflow *coflow)
 void Scheduler::FIFO(Flow *flow, Coflow *coflow)
 {
 	cout<<"--------使用先入先出算法调度--------"<<endl;
-	sort(flow,flow+NUMOFFLOW,comparebytime);	//按照流的到达时间排序
+	//sort(flow,flow+NUMOFFLOW,comparebytime);	//按照流的到达时间排序
 	float time=0.0;				//实时更新时间
 	float lastflashtime=0.0;	//记录上一次更新流表时间
 	UpdateRecvq(flow,time);		//开始更新接收队列
@@ -140,8 +169,8 @@ void Scheduler::FIFO(Flow *flow, Coflow *coflow)
 		time=SendFlow(f,time);	
 		f.setFinishtime(time);
 
-		//更新处理后流所属coflow完成时间
-		UpdateCoflowFinishtime(coflow,f);
+		//更新处理后流以及所属coflow完成时间
+		UpdateFinishtime(flow,coflow,f);
 
 		//每个时间单位更新接收队列
 		if(time-lastflashtime>=1.0)
@@ -151,7 +180,7 @@ void Scheduler::FIFO(Flow *flow, Coflow *coflow)
 		}
 	}
 	//流调度结束
-	cout<<"所有流调度完成时间："<<time<<endl;
+	cout<<"所有流调度完成时间："<<FinishTime(flow)<<endl;
 	cout<<"所有Coflow调度完成的平均时间为："<<CCT(coflow)<<endl;
 	cout<<"------------------------------------"<<endl;
 }
@@ -164,22 +193,44 @@ void Scheduler::NEWMIN(Flow *flow, Coflow *coflow)
 	float time=0.0;				//实时更新时间
 	float lastflashtime=0.0;	//记录上一次更新流表时间
 	UpdateRecvq(flow,time);		//开始更新接收队列
+
+	int num=0;
 	///////////right here//////////////
 	while(!recvq.empty())
 	{
+		
 		for(int i=0;i<NUMOFCOFLOW;i++)
 		{
-			//处理队列中属于响应coflow的流
-
-			//每个时间单位更新接收队列
-			if(time-lastflashtime>=1.0)
+			bool state=false;	//用于判断是否更新了接收队列
+			//将接收队列中的流加入相应coflow的流表
+			UpdateFlowtable(coflow,i);
+			while(!coflow[i].TableEmpty())
 			{
-				UpdateRecvq(flow,time);
-				lastflashtime=time;
-				break;
+				num++;
+				//依次处理流表中的流
+				Flow f;
+				f=coflow[i].getFlow();
+				time=SendFlow(f,time);
+				f.setFinishtime(time);
+				UpdateFinishtime(flow,coflow,f);
+				//每个时间单位更新接收队列
+				if(time-lastflashtime>=1.0)
+				{
+					if(!UpdateRecvq(flow,time))
+					{
+						continue;
+					}
+					lastflashtime=time;
+					state=true;
+					break;
+				}
 			}
+			if(state) break;
 		}
 	}
+	cout<<num<<endl;
+	cout<<"所有流调度完成时间："<<FinishTime(flow)<<endl;
+	cout<<"所有Coflow调度完成的平均时间为："<<CCT(coflow)<<endl;
 	cout<<"----------------------"<<endl;
 }
 

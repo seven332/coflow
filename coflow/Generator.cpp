@@ -22,7 +22,7 @@ int Generator::random(int l ,int h)
 //生成模拟数据
 void Generator::produce(Flow *flow)
 {
-	int tag=1;	
+	int tag=0;	
 	srand((unsigned)time(NULL));
 	for(int i = 0;i< NUMOFCOFLOW;i++)
 	{
@@ -31,7 +31,7 @@ void Generator::produce(Flow *flow)
 		for(int j = 0;j < NUMPERCOFLOW;j++)
 		{
 			int size=random(mean-range+1,mean+range);
-			Flow f(tag,size,(float)j,i+1);
+			Flow f(tag,size,(float)j,i);
 			tag++;
 			flow[i*NUMPERCOFLOW+j]=f;
 		}

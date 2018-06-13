@@ -80,7 +80,7 @@ void Flow::setFinishtime(float time)
 //输出流信息
 void Flow::print()
 {
-	cout<<"------流："<<flowtag<<"--------"<<endl;
+	cout<<"------流："<<flowtag+1<<"--------"<<endl;
 	cout<<"大小："<<size<<endl;
 	cout<<"到达时间："<<time<<endl;
 	cout<<"所属coflow标识："<<cotag<<endl;

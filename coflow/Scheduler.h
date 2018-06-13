@@ -15,10 +15,10 @@ private:
 public:
 	Scheduler(void);
 	~Scheduler(void);
-	void UpdateRecvq(Flow *flow, float time);			//更新接收队列
-	void GetFlowbyCotag(Coflow *coflow, int cotag);		//从接收队列取制定coflow的流
+	bool UpdateRecvq(Flow *flow, float time);			//更新接收队列
+	void UpdateFlowtable(Coflow *coflow, int cotag);	//更新指定coflow流表
 	float SendFlow(Flow f, float time);					//发送指定流
-	void UpdateCoflowFinishtime(Coflow *coflow, Flow f);//更新制定流所属coflow完成时间
+	void UpdateFinishtime(Flow *flow, Coflow *coflow, Flow f);		//更新完成时间
 	void UpdateCoflowFlowtable(Coflow *coflow);			//更新Coflow流表
 	void MINCCT(Flow *flow, Coflow *coflow);			//最小coflow平均完成时间调度方案
 	void NEWMIN(Flow *flow, Coflow *coflow);
