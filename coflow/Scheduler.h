@@ -8,10 +8,16 @@
 #include "Generator.h"
 #include <queue>
 
+#define LOWTHRESHOLD 200;
+#define HIGHTHRESHOLD 500
+
 class Scheduler
 {
 private:
-	vector<Flow> recvq;	//流接收队列
+	vector<Flow> recvq;				//流接收队列
+	priority_queue<Coflow> ql;		//小流优先级队列
+	priority_queue<Coflow> qm;		//中等流优先级队列
+	priority_queue<Coflow> qh;		//大流优先级队列
 public:
 	Scheduler(void);
 	~Scheduler(void);
@@ -28,6 +34,6 @@ public:
 	float CCT(Coflow *coflow);							//Coflow平均完成时间
 	static bool comparebycosize(Coflow a,Coflow b);		//对比两个coflow的大小,升序
 	static bool comparebytime(Flow a, Flow b);			//根据流的到达时间比较大小,升序
-	static bool comparebyflowtag(Flow a, Flow b);		//根据流的标识比较大小,升序
+	static bool comparebyflowtag(Flow a, Flow b);		//根据流的标识比较大小,升序			
 };
 

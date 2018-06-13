@@ -4,7 +4,7 @@
 void InitCoflow(Coflow  *coflow, int num)
 {
 	for(int i=0;i<num;i++)
-		coflow[i]=Coflow(i+1);
+		coflow[i]=Coflow(i);
 }
 
 //重置所有流的调度状态，改为非调度状态
@@ -46,4 +46,7 @@ int main()
 	InitCoflow(coflow,NUMOFCOFLOW);
 	ResetFlowState(flow);
 	sch.MINCCT(flow,coflow);
+	InitCoflow(coflow,NUMOFCOFLOW);
+	ResetFlowState(flow);
+	sch.MPQ(flow,coflow);
 }
