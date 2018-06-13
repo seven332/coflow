@@ -25,6 +25,13 @@ void Scheduler::UpdateRecvq(Flow *flow, float time)
 	}
 }
 
+//从接收队列取制定coflow的流
+//将属于制定coflow中的所有流从接收队列存入coflow
+void Scheduler::GetFlowbyCotag(Coflow *coflow, int cotag)
+{
+
+}
+
 //发送指定流
 //根据线速计算发送所需时间
 //返回更新后的当前时间
@@ -158,6 +165,21 @@ void Scheduler::NEWMIN(Flow *flow, Coflow *coflow)
 	float lastflashtime=0.0;	//记录上一次更新流表时间
 	UpdateRecvq(flow,time);		//开始更新接收队列
 	///////////right here//////////////
+	while(!recvq.empty())
+	{
+		for(int i=0;i<NUMOFCOFLOW;i++)
+		{
+			//处理队列中属于响应coflow的流
+
+			//每个时间单位更新接收队列
+			if(time-lastflashtime>=1.0)
+			{
+				UpdateRecvq(flow,time);
+				lastflashtime=time;
+				break;
+			}
+		}
+	}
 	cout<<"----------------------"<<endl;
 }
 
