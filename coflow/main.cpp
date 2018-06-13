@@ -44,7 +44,6 @@ int main()
 	gen.produce(flow);	
 	sch.FIFO(flow,coflow);
 	InitCoflow(coflow,NUMOFCOFLOW);
-	//sch.MINCCT(flow,coflow);
 	ResetFlowState(flow);
-	sch.NEWMIN(flow,coflow);
+	sch.MINCCT(flow,coflow);
 }

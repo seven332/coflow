@@ -21,7 +21,6 @@ public:
 	void UpdateFinishtime(Flow *flow, Coflow *coflow, Flow f);		//更新完成时间
 	void UpdateCoflowFlowtable(Coflow *coflow);			//更新Coflow流表
 	void MINCCT(Flow *flow, Coflow *coflow);			//最小coflow平均完成时间调度方案
-	void NEWMIN(Flow *flow, Coflow *coflow);
 	void FIFO(Flow *flow, Coflow *coflow);				//FIFO调度算法
 	void MPQ(Flow *flow, Coflow *coflow);				//多级优先权调度队列
 	void ClassifyByCotag(Flow *flow, Coflow *coflow);	//按照Coflow标识将流添加至coflow中

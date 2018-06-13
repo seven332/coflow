@@ -185,9 +185,11 @@ void Scheduler::FIFO(Flow *flow, Coflow *coflow)
 	cout<<"------------------------------------"<<endl;
 }
 
-//debug MINCCT
+//最小coflow平均完成时间调度方案
+//一种离线分析方法
 //在此情况下，已经预先知道了所有coflow的大小，在较小的coflow拥有最高的调度优先级
-void Scheduler::NEWMIN(Flow *flow, Coflow *coflow)
+//这里的方法是近似方法，不会打断当前传输的流，因此CCT会略高于理论值
+void Scheduler::MINCCT(Flow *flow, Coflow *coflow)
 {
 	cout<<"--------NEWMIN--------"<<endl;
 	float time=0.0;				//实时更新时间
@@ -232,32 +234,6 @@ void Scheduler::NEWMIN(Flow *flow, Coflow *coflow)
 	cout<<"所有流调度完成时间："<<FinishTime(flow)<<endl;
 	cout<<"所有Coflow调度完成的平均时间为："<<CCT(coflow)<<endl;
 	cout<<"----------------------"<<endl;
-}
-
-//最小coflow平均完成时间调度方案
-//一种离线分析方法，需要知道全部coflow的信息
-void Scheduler::MINCCT(Flow *flow, Coflow *coflow)
-{
-	cout<<"--------使用最小平均完成时间算法调度--------"<<endl;
-	ClassifyByCotag(flow,coflow);						//首先将所有流添加至对应coflow
-	sort(coflow,coflow+NUMOFCOFLOW,comparebycosize);	//按照coflow大小升序排序
-	sort(flow,flow+NUMOFFLOW,comparebyflowtag);			//按照flow的编号升序排序
-	float finishtime=0.0;								//实时更新完成时间
-	
-	//对所有coflow，按照其大小依次调度
-	for(int i=0;i<NUMOFCOFLOW;i++)
-	{
-		while(!coflow[i].TableEmpty())
-		{
-			Flow f=coflow[i].getFlow();
-			finishtime+=(float)f.getSize()/BANDWIDTH;
-			flow[f.getFlowtag()-1].setFinishtime(finishtime);
-			coflow[i].setFinishtime(finishtime);
-		}
-	}
-	cout<<"所有流调度完成时间："<<FinishTime(flow)<<endl;
-	cout<<"所有Coflow调度完成的平均时间为："<<CCT(coflow)<<endl;
-	cout<<"--------------------------------------------"<<endl;
 }
 
 //多级优先权调度队列
