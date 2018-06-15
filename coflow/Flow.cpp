@@ -83,6 +83,6 @@ void Flow::print()
 	cout<<"------流："<<flowtag+1<<"--------"<<endl;
 	cout<<"大小："<<size<<endl;
 	cout<<"到达时间："<<time<<endl;
-	cout<<"所属coflow标识："<<cotag<<endl;
+	cout<<"所属coflow标识："<<cotag+1<<endl;
 	cout<<"-------------------"<<endl<<endl;
 }

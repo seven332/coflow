@@ -14,6 +14,7 @@ Coflow::Coflow(int m_cotag)
 {
 	cotag=m_cotag;
 	size=0;
+	sentsize=0;
 	finishtime=0.0;
 	flowtable.clear();
 	flowtable.shrink_to_fit();
