@@ -70,6 +70,30 @@ void Scheduler::UpdateCoflowFlowtable(Coflow *coflow)
 	}
 }
 
+//更新Coflow流表
+//将接收队列中的流添加至coflow流表
+void Scheduler::UpdateCoflowFlowtableET(Coflow *coflow)
+{
+	vector<Flow>::iterator it;
+	for(it=recvq.begin();it!=recvq.end();)
+	{
+		int cotag=it->getCotag();
+		int tag=it->getTag();
+
+		//选择加入优先级高的coflow
+		if(tag>=0&&tag<cotag)
+		{
+			cotag=tag;
+		}
+		//更新coflow大小
+		coflow[cotag].setSize(coflow[cotag].getSize()+it->getSize());
+		//更新coflow流表
+		coflow[cotag].InsertFlow(*it);
+		//接收队列中去除响应流
+		it=recvq.erase(it);
+	}
+}
+
 //发送指定流
 //根据线速计算发送所需时间
 //返回更新后的当前时间
@@ -89,6 +113,20 @@ void Scheduler::UpdateInfo(Flow *flow, Coflow *coflow, Flow f)
 	flow[flowtag].setFinishtime(f.getFinishtime());
 	coflow[cotag].setFinishtime(f.getFinishtime());
 	coflow[cotag].setSentsize(sentsize);
+}
+
+//更新有错信息
+void Scheduler::UpdateInfoFE(Flow *flow,Coflow *coflow,Flow f)
+{
+	int flowtag=f.getFlowtag();
+	int cotag=f.getCotag();
+	int sentsize=coflow[cotag].getSentsize()+f.getSize();
+	flow[flowtag].setFinishtime(f.getFinishtime());	
+	coflow[cotag].setSentsize(sentsize);
+	if(f.getTag()==-1)
+		coflow[cotag].setFinishtime(f.getFinishtime());
+	else
+		coflow[f.getTag()].setFinishtime(f.getFinishtime());
 }
 
 //计算coflow的待发送大小，依此将之分配到对应的优先级队列
@@ -273,14 +311,21 @@ void Scheduler::MPQ(Flow *flow, Coflow *coflow)
 	float time=0.0;				//实时更新时间
 	float lastflashtime=0.0;	//记录上一次更新流表时间
 	bool dispatchtable[NUMOFCOFLOW];	//分配记录表
+
+	for(int i=0;i<NUMOFCOFLOW;i++)
+		dispatchtable[i]=false;
+
 	UpdateRecvq(flow,time);		//开始更新接收队列
 	//将接收队列中的流分配到对应coflow
 	UpdateCoflowFlowtable(coflow);
 	//将coflow分配到相应的优先级队列
 	for(int i=0;i<NUMOFCOFLOW;i++)
 	{
-		classifier(coflow[i]);
-		dispatchtable[i]=true;
+		if(!dispatchtable[i]&&!coflow[i].TableEmpty())
+		{
+			classifier(coflow[i]);
+			dispatchtable[i]=true;
+		}
 	}
 
 	////////////开始调度////////////
@@ -348,6 +393,190 @@ void Scheduler::MPQ(Flow *flow, Coflow *coflow)
 	cout<<"所有流调度完成时间："<<FinishTime(flow)<<endl;
 	cout<<"所有Coflow调度完成的平均时间为："<<CCT(coflow)<<endl;
 	cout<<"------------------------------------------------------"<<endl;
+}
+
+//错分类的多级优先级队列调度
+void Scheduler::EMPQ(Flow *flow, Coflow *coflow)
+{
+	cout<<"--------存在coflow错分类的多级优先级队列算法调度--------"<<endl;
+	float time=0.0;				//实时更新时间
+	float lastflashtime=0.0;	//记录上一次更新流表时间
+	bool dispatchtable[NUMOFCOFLOW];	//分配记录表
+
+	for(int i=0;i<NUMOFCOFLOW;i++)
+		dispatchtable[i]=false;
+
+	UpdateRecvq(flow,time);		//开始更新接收队列
+	//将接收队列中的流分配到对应coflow
+	UpdateCoflowFlowtable(coflow);
+	//将coflow分配到相应的优先级队列
+	for(int i=0;i<NUMOFCOFLOW;i++)
+	{
+		if(!dispatchtable[i]&&!coflow[i].TableEmpty())
+		{
+			classifier(coflow[i]);
+			dispatchtable[i]=true;
+		}
+	}
+
+	////////////开始调度////////////
+	while((!ql.empty())||(!qm.empty())||(!qh.empty()))
+	{
+		int cotag;
+		Flow f;
+		if(!ql.empty())
+		{
+			//优先处理q1中的coflow
+			//首先取出顶部元素
+			cotag=ql.top().getCotag();
+			ql.pop();
+		}
+		else if(!qm.empty())
+		{
+			cotag=qm.top().getCotag();
+			qm.pop();
+		}
+		else
+		{
+			cotag=qh.top().getCotag();
+			qh.pop();
+		}
+		//发送其中一条流				
+		f=coflow[cotag].getFlow();		
+		time=SendFlow(f,time);
+		//更新coflow信息和流表
+		f.setFinishtime(time);
+		UpdateInfoFE(flow,coflow,f);
+		//判断coflow流表是否为空
+		//若不为空，根据其信息加入相应优先级队列
+		if(!coflow[cotag].TableEmpty())
+		{
+			classifier(coflow[cotag]);
+		}
+		//否则，更改分配表，以便后续从新分配
+		else
+		{
+			dispatchtable[cotag]=false;
+		}
+		//一条流调度完毕后，判断时间，如果时间到，更新接收队列，从新更新coflow流表，更新优先队列内容
+		if(time-lastflashtime>=1.0)
+		{
+			if(UpdateRecvq(flow,time))
+			{
+				lastflashtime=time;
+				//将coflow分配到相应的优先级队列
+				//将接收队列中的流分配到对应coflow
+				UpdateCoflowFlowtable(coflow);	
+				for(int i=0;i<NUMOFCOFLOW;i++)
+				{
+					if(!dispatchtable[i]&&!coflow[i].TableEmpty())
+					{
+						//将未被调度的待调度coflow加入优先级队列
+						classifier(coflow[i]);		
+						dispatchtable[i]=true;		
+					}
+				}
+			}
+		}
+		//一次处理结束
+	}
+
+	cout<<"所有流调度完成时间："<<FinishTime(flow)<<endl;
+	cout<<"所有Coflow调度完成的平均时间为："<<CCT(coflow)<<endl;
+	cout<<"--------------------------------------------------------"<<endl;
+
+}
+
+//带有容错机制的多级优先级队列调度
+void Scheduler::ETMPQ(Flow *flow, Coflow *coflow)
+{
+	cout<<"--------有容错机制的基于coflow的多级优先级队列算法调度--------"<<endl;
+	float time=0.0;				//实时更新时间
+	float lastflashtime=0.0;	//记录上一次更新流表时间
+	bool dispatchtable[NUMOFCOFLOW];	//分配记录表
+
+	for(int i=0;i<NUMOFCOFLOW;i++)
+		dispatchtable[i]=false;
+
+	UpdateRecvq(flow,time);		//开始更新接收队列
+	//将接收队列中的流分配到对应coflow
+	UpdateCoflowFlowtableET(coflow);
+	//将coflow分配到相应的优先级队列
+	for(int i=0;i<NUMOFCOFLOW;i++)
+	{
+		if(!dispatchtable[i]&&!coflow[i].TableEmpty())
+		{
+			classifier(coflow[i]);
+			dispatchtable[i]=true;
+		}
+	}
+
+	////////////开始调度////////////
+	while((!ql.empty())||(!qm.empty())||(!qh.empty()))
+	{
+		int cotag;
+		Flow f;
+		if(!ql.empty())
+		{
+			//优先处理q1中的coflow
+			//首先取出顶部元素
+			cotag=ql.top().getCotag();
+			ql.pop();
+		}
+		else if(!qm.empty())
+		{
+			cotag=qm.top().getCotag();
+			qm.pop();
+		}
+		else
+		{
+			cotag=qh.top().getCotag();
+			qh.pop();
+		}
+		//发送其中一条流				
+		f=coflow[cotag].getFlow();		
+		time=SendFlow(f,time);
+		//更新coflow信息和流表
+		f.setFinishtime(time);
+		UpdateInfoFE(flow,coflow,f);
+		//判断coflow流表是否为空
+		//若不为空，根据其信息加入相应优先级队列
+		if(!coflow[cotag].TableEmpty())
+		{
+			classifier(coflow[cotag]);
+		}
+		//否则，更改分配表，以便后续从新分配
+		else
+		{
+			dispatchtable[cotag]=false;
+		}
+		//一条流调度完毕后，判断时间，如果时间到，更新接收队列，从新更新coflow流表，更新优先队列内容
+		if(time-lastflashtime>=1.0)
+		{
+			if(UpdateRecvq(flow,time))
+			{
+				lastflashtime=time;
+				//将coflow分配到相应的优先级队列
+				//将接收队列中的流分配到对应coflow
+				UpdateCoflowFlowtableET(coflow);	
+				for(int i=0;i<NUMOFCOFLOW;i++)
+				{
+					if(!dispatchtable[i]&&!coflow[i].TableEmpty())
+					{
+						//将未被调度的待调度coflow加入优先级队列
+						classifier(coflow[i]);		
+						dispatchtable[i]=true;		
+					}
+				}
+			}
+		}
+		//一次处理结束
+	}
+
+	cout<<"所有流调度完成时间："<<FinishTime(flow)<<endl;
+	cout<<"所有Coflow调度完成的平均时间为："<<CCT(coflow)<<endl;
+	cout<<"--------------------------------------------------------------"<<endl;
+
 }
 
 //重载<用于判断coflow优先级

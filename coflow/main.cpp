@@ -49,4 +49,16 @@ int main()
 	InitCoflow(coflow,NUMOFCOFLOW);
 	ResetFlowState(flow);
 	sch.MPQ(flow,coflow);
+	InitCoflow(coflow,NUMOFCOFLOW);
+	ResetFlowState(flow);
+	flow[99].setCotag(0);
+	flow[99].setTag(9);
+	flow[18].setCotag(8);
+	flow[18].setTag(1);
+	flow[9].setCotag(9);	
+	flow[9].setTag(0);
+	sch.EMPQ(flow,coflow);
+	InitCoflow(coflow,NUMOFCOFLOW);
+	ResetFlowState(flow);
+	sch.ETMPQ(flow,coflow);
 }

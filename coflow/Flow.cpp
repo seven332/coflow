@@ -18,7 +18,7 @@ Flow::Flow(int m_flowtag, int m_size, float m_time, int m_cotag)
 	size=m_size;
 	time=m_time;
 	cotag=m_cotag;
-	tag=0;
+	tag=-1;
 	state=false;
 	finishtime=0;
 }
@@ -71,10 +71,22 @@ void Flow::setState(bool m_state)
 	state=m_state;
 }
 
+//设置分类结果
+void Flow::setCotag(int m_cotag)
+{
+	cotag=m_cotag;
+}
+
 //设置流调度完成时间
 void Flow::setFinishtime(float time)
 {
 	finishtime=time;
+}
+
+//设置coflow分类真值
+void Flow::setTag(int m_tag)
+{
+	tag=m_tag;
 }
 
 //输出流信息
