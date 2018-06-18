@@ -333,21 +333,26 @@ void Scheduler::MPQ(Flow *flow, Coflow *coflow)
 	{
 		int cotag;
 		Flow f;
+		Coflow cf;
 		if(!ql.empty())
 		{
 			//优先处理q1中的coflow
 			//首先取出顶部元素
-			cotag=ql.top().getCotag();
+			cf=ql.top();
+			cotag=cf.getCotag();
+			//cotag=ql.top().getCotag();
 			ql.pop();
 		}
 		else if(!qm.empty())
 		{
-			cotag=qm.top().getCotag();
+			cf=qm.top();
+			cotag=cf.getCotag();
 			qm.pop();
 		}
 		else
 		{
-			cotag=qh.top().getCotag();
+			cf=qh.top();
+			cotag=cf.getCotag();
 			qh.pop();
 		}
 		//发送其中一条流				
@@ -424,21 +429,26 @@ void Scheduler::EMPQ(Flow *flow, Coflow *coflow)
 	{
 		int cotag;
 		Flow f;
+		Coflow cf;
 		if(!ql.empty())
 		{
 			//优先处理q1中的coflow
 			//首先取出顶部元素
-			cotag=ql.top().getCotag();
+			cf=ql.top();
+			cotag=cf.getCotag();
+			//cotag=ql.top().getCotag();
 			ql.pop();
 		}
 		else if(!qm.empty())
 		{
-			cotag=qm.top().getCotag();
+			cf=qm.top();
+			cotag=cf.getCotag();
 			qm.pop();
 		}
 		else
 		{
-			cotag=qh.top().getCotag();
+			cf=qh.top();
+			cotag=cf.getCotag();
 			qh.pop();
 		}
 		//发送其中一条流				
@@ -516,21 +526,26 @@ void Scheduler::ETMPQ(Flow *flow, Coflow *coflow)
 	{
 		int cotag;
 		Flow f;
+		Coflow cf;
 		if(!ql.empty())
 		{
 			//优先处理q1中的coflow
 			//首先取出顶部元素
-			cotag=ql.top().getCotag();
+			cf=ql.top();
+			cotag=cf.getCotag();
+			//cotag=ql.top().getCotag();
 			ql.pop();
 		}
 		else if(!qm.empty())
 		{
-			cotag=qm.top().getCotag();
+			cf=qm.top();
+			cotag=cf.getCotag();
 			qm.pop();
 		}
 		else
 		{
-			cotag=qh.top().getCotag();
+			cf=qh.top();
+			cotag=cf.getCotag();
 			qh.pop();
 		}
 		//发送其中一条流				
